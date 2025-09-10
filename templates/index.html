@@ -1,13 +1,113 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  </head>
-  <body>
-    <h1 class="text-3xl font-bold underline">
-      Hello world!
-    </h1>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>Azure GPT Chat</title>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex font-sans">
+
+  <!-- Sidebar -->
+  <div class="w-64 bg-gray-800 p-4 flex-shrink-0 flex flex-col">
+    <h2 class="text-2xl font-bold mb-4 text-center">Azure GPT Chats</h2>
+
+    <!-- Search input -->
+    <input
+      type="text"
+      id="chat-search"
+      placeholder="Search chats..."
+      class="mb-4 p-2 rounded-xl bg-gray-700 text-white focus:outline-none placeholder-gray-400"
+      onkeyup="filterChats()"
+    />
+
+    <ul id="chat-list" class="flex-1 overflow-y-auto">
+      {% for chat in data.searches %}
+        <li class="mb-3 p-3 bg-gray-700 rounded-xl hover:bg-gray-600 cursor-pointer transition" onclick="showChat('{{ chat.id }}')">
+          {{ chat.id }}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Chat area -->
+  <div class="flex-1 relative flex flex-col bg-gray-900 p-6">
+    {% for chat in data.searches %}
+    <div id="{{ chat.id }}" class="chat-panel {% if not loop.first %}hidden{% endif %} flex-1 flex flex-col">
+      <div class="flex-1 overflow-y-auto mb-20">
+        {% for msg in chat.conversation %}
+        <div class="flex gap-3 items-start {% if msg.role=='user' %}justify-end{% endif %}">
+          {% if msg.role=='user' %}
+          <div class="max-w-xs bg-gray-700 text-white rounded-xl p-3 shadow-md">
+            {{ msg.message }}
+          </div>
+          <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+            <span class="font-bold text-white">U</span>
+          </div>
+          {% else %}
+          <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+            <span class="font-bold text-white">A</span>
+          </div>
+          <div class="max-w-xs bg-blue-700 text-white rounded-xl p-3 shadow-md">
+            {{ msg.message }}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Input box -->
+      <form class="absolute bottom-4 left-0 w-full px-4 flex gap-3" onsubmit="sendMessage(event)">
+        <input type="text" id="chat-input" class="flex-grow rounded-xl p-3 bg-gray-700 text-white focus:outline-none placeholder-gray-400" placeholder="Type your message..." autocomplete="off">
+        <button type="submit" class="bg-green-500 hover:bg-green-600 px-5 py-3 rounded-xl font-semibold shadow-md transition">Send</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+
+  <script>
+    let currentChatId = "{{ data.searches[0].id }}";
+
+    function showChat(chatId) {
+      currentChatId = chatId;
+      document.querySelectorAll('.chat-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(chatId).classList.remove('hidden');
+    }
+
+    function sendMessage(event) {
+      event.preventDefault();
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      if (!message) return;
+
+      const chatPanel = document.getElementById(currentChatId);
+      const chatMessages = chatPanel.querySelector('div.flex-1');
+
+      // User message bubble
+      const userDiv = document.createElement('div');
+      userDiv.className = 'flex gap-3 items-start justify-end mb-2';
+      userDiv.innerHTML = `
+        <div class="max-w-xs bg-gray-700 text-white rounded-xl p-3 shadow-md">${message}</div>
+        <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+          <span class="font-bold text-white">U</span>
+        </div>
+      `;
+      chatMessages.appendChild(userDiv);
+
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      input.value = "";
+    }
+
+    function filterChats() {
+      const query = document.getElementById('chat-search').value.toLowerCase();
+      document.querySelectorAll('#chat-list li').forEach(li => {
+        if (li.textContent.toLowerCase().includes(query)) {
+          li.style.display = '';
+        } else {
+          li.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
 </html>
