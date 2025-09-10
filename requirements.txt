@@ -1,3 +1,9 @@
 fastapi
 uvicorn
 jinja2
+
+python-dotenv
+
+#infrastructure
+azure-mgmt-resource
+azure-identity
