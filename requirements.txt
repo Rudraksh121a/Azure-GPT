@@ -7,3 +7,8 @@ python-dotenv
 #infrastructure
 azure-mgmt-resource
 azure-identity
+azure-mgmt-cosmosdb
+
+
+#database
+azure-cosmos

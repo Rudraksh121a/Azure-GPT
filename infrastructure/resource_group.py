@@ -16,10 +16,10 @@ from logging_setup.setup import setup_logger
 logger = setup_logger(__name__, "resource_group.log")
 
 
-def create_resource_group(subscription_id: str, resource_group_name: str, location: str):
+def create_resource_group(subscription_id: str, resource_group_name: str, location: str, credential: DefaultAzureCredential):
     try:
         logger.info("Authenticating with Azure...")
-        credential = DefaultAzureCredential()
+        
 
         resource_client = ResourceManagementClient(credential, subscription_id)
         logger.info(f"Using subscription ID: {subscription_id}")
