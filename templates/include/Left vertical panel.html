@@ -1,0 +1,17 @@
+<!-- Left vertical panel -->
+<div
+  class="w-64 min-h-screen bg-gradient-to-b from-gray-800 to-gray-900 text-white p-6 shadow-lg flex flex-col overflow-y-auto"
+>
+  <h2 class="text-2xl font-bold mb-6 tracking-wide">Azure GPT</h2>
+  <ul class="flex-1">
+    {% for item in data.searches %}
+    <li class="mb-3">
+      <a
+        href="#"
+        class="hover:underline hover:text-green-400 transition-colors duration-200"
+        >{{ item }}</a
+      >
+    </li>
+    {% endfor %}
+  </ul>
+</div>
